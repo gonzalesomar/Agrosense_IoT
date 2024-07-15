@@ -1,0 +1,363 @@
+*{
+    box-sizing: border-box;
+    font-family: "Nunito Sans", sans-serif;
+}
+body{
+    margin: 0px;
+    background-color: #f6f1f151;
+}
+.dashboard{
+    padding: 0px 10px 10px 5px;
+    margin: 0 auto;
+}
+
+/* ==============================================
+                    Navigation
+================================================= */
+.dashboard .navigation{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    background-color: #242424;
+    color: #ffffff;
+}
+.dashboard .navigation img{
+    margin-top: 15px;
+    margin-left: 10px;
+    width: 160px;
+    height: 80px;
+    border-radius: 10px;
+}
+.dashboard .navigation nav{
+    margin: auto;
+}
+.dashboard .navigation nav a{
+    display: flex;
+    justify-content: left;
+    border-radius: 5%;
+    margin: 5px 20px;
+    text-decoration: none; /* Removes the underline */
+    color: white;
+}
+
+.dashboard .navigation nav a .material-symbols-outlined {
+    margin-left: 10px;
+    margin-right: 10px;
+    font-size: 25px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.dashboard .navigation nav a .text{
+    font-size: 20px;
+    margin-left: 2px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.dashboard .navigation nav a:hover {
+    background-color: #c4eb5a; /* Change background color when hovering over the button */
+    color:#242424;
+}
+
+/* ==============================================
+                 Main Dashboard
+================================================= */
+/* Search */
+.dashboard .main .search{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.dashboard .main .search form{
+    margin-top: 30px;
+    margin-bottom: 10px;
+    position: relative;
+}
+.dashboard .main .search form input{
+    width: 100%;
+    padding: 10px 10px 10px 60px;
+    border: 0px solid #ffffff;
+    border-bottom: 1px solid #727272;
+    border-radius: 5px;
+    outline: none;
+    font-size: 16px;
+    background-color: rgba( 0 0 0 / 0);
+}
+.dashboard .main .search form input::placeholder{
+    color: #727272;
+}
+.dashboard .main .search form span{
+    position: absolute;
+    left: 15px;
+    top: 10px;
+    color: #727272;
+}
+.dashboard .main .search .notification{
+    margin-top: 20px;
+}
+.dashboard .main .search .notification span:nth-child(1){
+    margin-right: 15px;
+    position: relative;
+}
+.dashboard .main .search .notification span:nth-child(1)::before{
+    content: '';
+    width: 10px;
+    height: 10px;
+    background-color: sandybrown;
+    position: absolute;
+    border-radius: 50%;
+    top: 3px;
+}
+
+
+/* Tittle */
+.dashboard .main .title ,
+.dashboard .main_stats .title {
+    margin-bottom: 30px;
+}
+.dashboard .main .title h1,
+.dashboard .main_stats .title h1{
+    font-size: 35px;
+    line-height: 0px;
+}
+.dashboard .main_stats .title form{
+    background-color: #c4eb5aac;
+    border: 1px solid #ffffff;
+    padding: 20px;
+    margin: 10px 0;
+    border-radius: 5px;
+    width: 80%;
+}
+.dashboard .main_stats .title form label{
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+    margin-right: 10px;
+}
+.dashboard .main_stats .title form select{
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    background-color: rgba( 0 0 0 / 0);
+}
+/* Charts Stats */
+.dashboard .main_stats .charts{
+    width: 95%;
+}
+
+/* Sensors */
+.dashboard .main .sensors{
+    margin-top: 10px;
+    align-items: center;
+    margin-right: 5px;
+}
+.dashboard h2{
+    font-size: 25px;
+    margin-left: 5px;
+    color: black;
+}
+.dashboard p{
+    color: #727272;
+    margin-left: 5px;
+}
+
+.dashboard .main .sensors h3{
+    font-size: 25px;
+    margin-left: 10px;
+    font-weight: 400;
+}
+.dashboard .main .sensors .value{
+    font-size: 40px;
+    margin-left: 10px;
+    font-weight: 600;
+}
+.dashboard .main .sensors .units{
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.humedad{
+    padding: 10px 20px 20px 10px;
+    background-color: rgba(136, 218, 251, 0.482);
+    box-shadow: 1px 1px 40px rgba( 0 0 0 / .01);
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+.humedad span{
+    display: flex;
+    justify-content: space-between;
+    /* width: 100%; */
+}
+.humedad .chart div{
+    width: 33%;
+}
+.humedad .chart canvas{
+    margin-right: 15px;
+}
+.dashboard .main .sensors .humedad:hover{
+    background-color: rgba(136, 218, 251, 0.8);
+}
+
+.dashboard .main .sensors .ec{
+    padding: 10px 20px 20px 10px;
+    background-color: rgba(243, 255, 168, 0.5);
+    box-shadow: 1px 1px 40px rgba( 0 0 0 / .01);
+    margin-bottom: 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.dashboard .main .sensors .ec:hover{
+    background-color: rgba(243, 255, 168, 0.9);
+}
+.dashboard .main .sensors .battery{
+    padding: 10px 20px 20px 10px;
+    background-color: rgba(108, 227, 134, 0.5);
+    box-shadow: 1px 1px 40px rgba( 0 0 0 / .1);
+    margin-bottom: 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.dashboard .main .sensors .battery:hover{
+    background-color: rgba(108, 227, 134, 0.8);
+}
+.dashboard .main .sensors .material-symbols-outlined{
+    font-size: 70px;
+}
+
+/* ==============================================
+                 Calendar
+================================================= */
+.dashboard .calendarizacion div{
+    width: 100%;
+    margin: auto;
+    color: #727272;
+}
+.riego {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.riego h2, .riego p {
+    text-align: left;
+    width: 100%;
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+button {
+    background-color: #4CAF50; /* Green background */
+    border: none; /* No border */
+    color: white; /* White text */
+    padding: 15px 32px; /* Padding around the text */
+    text-align: center; /* Center the text */
+    text-decoration: none; /* No underline */
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer; /* Change cursor to pointer when hovering over the button */
+    border-radius: 12px; /* Rounded corners */
+    transition-duration: 0.4s; /* Transition effect when hovering over the button */
+}
+
+button:hover {
+    background-color: #45a049; /* Change background color when hovering over the button */
+}
+
+/* Media Query 768 px */
+@media only screen and (min-width: 768px){
+    .dashboard .main .sensors{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    .dashboard .main .sensors .sensor_1{
+        width: 45%;
+    }
+    .dashboard .main .sensors .sensor_2{
+        width: 45%;
+    }
+    .dashboard .main_stats .charts{
+        width: 100%;
+    }
+    .dashboard .main_stats .charts .chart_1,
+    .dashboard .main_stats .charts .chart_2{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    .dashboard .main_stats .charts .chart_1 div,
+    .dashboard .main_stats .charts .chart_2 div{
+        margin-top: 50px;
+        margin-right: 10px;
+        width: 48%;
+    }
+    /* Calendar */
+    .dashboard .calendarizacion{
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: nowrap;
+        padding-top: 70px;
+    }
+    .dashboard .calendarizacion .calendario{
+        width: 60%;
+    }
+    .dashboard .calendarizacion .riego{
+        width: 35%;
+    }
+}
+/* Media Query 1024 px */
+@media only screen and (min-width: 1024px){
+    .dashboard{
+        padding: 1px 0px;
+        margin: 0 auto;
+    }
+    .dashboard .navigation,
+    .dashboard .navigation nav a,
+    .dashboard .calendarizacion{
+        display: block;
+    }
+    .dashboard .navigation{
+        width: 200px;
+        position: fixed;
+        z-index: 5;
+    }
+    .dashboard .navigation nav a{
+        display: flex;
+    }
+    .dashboard .main{
+        top: 5px;
+        width: 50%;
+        margin-left: 220px;
+        margin-right: 20px;
+    }
+    .dashboard .main_stats{
+        top: 5px;
+        width: 68%;
+        margin-left: 220px;
+        margin-right: 20px;
+    }
+    .dashboard .calendarizacion{
+        width: 30%;
+        padding-top: 0px;
+        position: fixed;
+        top: 5px;
+        right: 0px;
+    }
+    .dashboard .calendarizacion .calendario,
+    .dashboard .calendarizacion .riego{
+        width: 100%;
+        border-radius: 5px;
+    }
+    .dashboard .navigation nav{
+        margin-top: 15vh;
+        margin-bottom: 100vh;
+    }
+    .dashboard .navigation nav a{
+        margin-top: 10vh;
+    }
+}

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Page</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Sleek, modern font */
+        background: linear-gradient(120deg, #89f7fe, #66a6ff); /* Gradient background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        color: #333;
+    }
+    form {
+        padding: 20px;
+        background: #fff;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2); /* More pronounced shadow for 3D effect */
+        border-radius: 10px;
+        width: 300px;
+        animation: appear 0.5s ease-in-out forwards; /* Smooth appearance animation */
+    }
+    @keyframes appear {
+        0% { opacity: 0; transform: translateY(-20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    h1 {
+        text-align: center;
+        color: #555;
+        font-size: 24px; /* Larger font size for header */
+    }
+    h5 {
+        color: #d9534f; /* Bootstrap danger color for errors */
+        text-align: center;
+        font-size: 16px;
+    }
+    p {
+        margin: 12px 0 6px;
+        font-weight: bold;
+    }
+    input[type="text"], input[type="email"], input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px; /* Increased spacing for clarity */
+        border: 1px solid #ccc;
+        border-radius: 5px; /* Slightly more rounded corners for inputs */
+        box-sizing: border-box; /* Better width management */
+    }
+    input[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #5cb85c; /* Bootstrap success color for button */
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    input[type="submit"]:hover, input[type="submit"]:focus {
+        background-color: #4cae4c; /* Darker green on hover/focus */
+    }
+    .password-strength {
+      height: 5px;
+      background: #d8dee9;
+      border-radius: 3px;
+      margin-top: 5px;
+    }
+    .password-strength-meter {
+      height: 5px;
+      border-radius: 3px;
+      background-color: #a3be8c;
+      width: 0%;
+      transition: width 0.3s ease-in-out;
+    }
+    .tooltip {
+      font-size: 13px;
+      color: #4c566a;
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+<form method="POST" action="register" onsubmit="return checkForm(this);">
+    {% csrf_token %}
+    <h1>Sign Up Below</h1>
+    {% for message in messages %} 
+    <h5>{{ message }}</h5>
+    {% endfor %}
+    <p>Username:</p>
+    <input type="text" name="username" required>
+    <p>Email:</p>
+    <input type="email" name="email" required>
+    <p>Password:</p>
+    <input type="password" name="password" id="password" required oninput="updatePasswordStrength(this.value)">
+    <div class="password-strength"><div class="password-strength-meter" id="password-strength-meter"></div></div>
+    <span class="tooltip" id="password-tooltip"></span>
+    <p>Repeat Password:</p>
+    <input type="password" name="password2" required><br>
+    <input type="submit" value="Register">
+</form>
+<script>
+    function updatePasswordStrength(password) {
+        const strengthMeter = document.getElementById('password-strength-meter');
+        const strengthText = document.getElementById('password-tooltip');
+        const strengths = {
+            0: "Very Weak", 1: "Weak", 2: "Moderate",
+            3: "Strong", 4: "Very Strong"
+        };
+        var strengthValue = 0;
+        if (password.length > 5) strengthValue++;
+        if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strengthValue++;
+        if (password.match(/[0-9]/)) strengthValue++;
+        if (password.match(/[^a-zA-Z0-9]/)) strengthValue++;
+        
+        strengthMeter.style.width = (strengthValue / 4) * 100 + '%';
+        strengthMeter.style.backgroundColor = strengthValue >= 3 ? '#a3be8c' : '#bf616a';
+        strengthText.textContent = password ? 'Strength: ' + strengths[strengthValue] : '';
+    }
+    
+    function checkForm(form) {
+        if(form.password.value !== form.password2.value) {
+            alert("Error: Passwords do not match!");
+            return false;
+        }
+        return true;
+    }
+</script>
+</body>
+</html>

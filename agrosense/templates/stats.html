@@ -1,0 +1,396 @@
+{%load static%}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrosense</title>
+    <link href="{% static 'assets/img/favicon.ico'%}" rel="icon">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="preconnect" href="'https://fonts.googleapis.com">
+    <link rel="preconnect" href="'https://fonts.gstatic.com'" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    
+    <!-- <link rel="stylesheet" href="assets/css/icons.css"> -->
+    <link rel="stylesheet" href="{% static 'assets_dashboard/css/style.css'%}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class = "dashboard"> <!-- This is where the dashboard will be displayed -->
+        <section class = "navigation"> <!-- Navigation-->
+            <img src = "{% static 'assets/img/logo_v2.svg'%}" alt = "home logo">
+            <nav> 
+                <a href="index_dashboard">
+                    <span class="material-symbols-outlined"> home </span>
+                    <span class="text">  Principal </span>
+                </a>
+
+                <a href="stats">
+                    <span class="material-symbols-outlined"> chart_data </span>
+                    <span class="text">  Estadisticas </span>
+                </a>
+
+                <!-- <a href="help">
+                    <span class="material-symbols-outlined"> live_help </span>
+                    <span class="text">  Ayuda </span>
+                </a> -->
+
+                <a href="logout">
+                    <span class="material-symbols-outlined"> logout </span>
+                    <span class="text">  Logout </span>
+                </a>
+            </nav>
+        </section> <!-- Navigation End-->
+        <section class = "main_stats">
+            <div class="title"> <!-- Title-->
+                <h1> Estadisticas </h1>
+                <p> En esta sección se muestran las estadísticas de los sensores. </p>
+                <form action = "#">
+                    <label for="projects"> Mostrar datos del </label>
+                    <select name="projects" id="projects">
+                        <option value="sensor1"> Sensor 1 </option>
+                        <option value="sensor2"> Sensor 2 </option>
+                    </select>
+                </form>
+            </div> <!-- Title End-->
+            <div class="charts"> 
+                <div class="chart_1"> 
+                    <div>
+                        <canvas id="Humedad_1"></canvas>
+                    </div>
+                    <div>
+                        <canvas id="EC_1"></canvas>
+                    </div>
+                    <div>
+                        <canvas id="BAT_1"></canvas>
+                    </div>
+                    
+                </div>
+                <div class="chart_2" style="display: none;"> 
+                    <div>
+                        <canvas id="Humedad_2"></canvas>
+                    </div>
+                    <div>
+                        <canvas id="EC_2"></canvas>
+                    </div>
+                    <div>
+                        <canvas id="BAT_2"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script src="{% static 'assets_dashboard/js/stats_selected.js'%}"></script>
+</body>
+
+<script>
+// var xLabels_1 = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+// var xLabels_2 = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+var xLabels_1 = new Array(24);
+var xLabels_2 = new Array(24);
+
+var data_humedad_1 = [[75, 72, 63, 59, 50, 43],
+                      [62, 49, 45, 35, 27, 22], 
+                      [52, 39, 35, 25, 19, 13]];
+
+var data_humedad_2 = [[30, 42, 73, 59, 40, 33], 
+                      [22, 39, 65, 45, 27, 22], 
+                      [12, 29, 55, 40, 19, 13]];
+                      
+var dataset_ec_1 = [22, 29, 13, 45, 62, 43];
+var dataset_ec_2 = [12, 19, 31, 25, 20, 39];
+
+var dataset_bat_1 = [100, 93, 74, 53, 22, 13];
+var dataset_bat_2 = [80, 73, 64, 53, 32, 23];
+
+var bat1_chart = null;
+var bat2_chart = null;
+var hum1_chart = null;
+var hum2_chart = null;
+var ec1_chart = null;
+var ec2_chart = null;
+
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    function fetchSensorData() {
+        fetch('/get-sensor-chart/')
+        .then(response => {
+            if (!response.ok) {
+            throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const sensor1Data = data.sensor_1_last_10_entries;
+            const sensor2Data = data.sensor_2_last_10_entries;
+
+            // Update xLabels with new timestamps
+            xLabels_1 = sensor1Data.map(entry => entry.timestamp);
+            xLabels_2 = sensor2Data.map(entry => entry.timestamp);
+
+            const newBatteryLevels1 = sensor1Data.map(entry => parseFloat(entry.battery_level));
+            const newBatteryLevels2 = sensor2Data.map(entry => parseFloat(entry.battery_level));
+            const newEcLevels1 = sensor1Data.map(entry => parseFloat(entry.electrical_conductivity));
+            const newEcLevels2 = sensor2Data.map(entry => parseFloat(entry.electrical_conductivity));
+
+            // Initialize empty arrays for each humidity level
+            let humidity_25_1 = [];
+            let humidity_50_1 = [];
+            let humidity_75_1 = [];
+
+            sensor1Data.forEach(entry => {
+                humidity_25_1.push(entry.humidity_25);
+                humidity_50_1.push(entry.humidity_50);
+                humidity_75_1.push(entry.humidity_75);
+            });
+
+            let humidity_25_2 = [];
+            let humidity_50_2 = [];
+            let humidity_75_2 = [];
+
+            sensor2Data.forEach(entry => {
+                humidity_25_2.push(entry.humidity_25);
+                humidity_50_2.push(entry.humidity_50);
+                humidity_75_2.push(entry.humidity_75);
+            });
+
+
+            // Update dataset_bat_1 with new battery levels
+            dataset_bat_1 = newBatteryLevels1;
+            bat1_chart.destroy();
+            bat1_chart = ChartBat('BAT_1', dataset_bat_1, xLabels_1);
+            console.log("Updated dataset_bat_1 with sensor 1 battery levels:", dataset_bat_1);
+
+            dataset_bat_2 = newBatteryLevels2;
+            bat2_chart.destroy();
+            bat2_chart = ChartBat('BAT_2', dataset_bat_2, xLabels_2);
+            console.log("Updated dataset_bat_2 with sensor 2 battery levels:", dataset_bat_2);
+
+            dataset_ec_1 = newEcLevels1;
+            ec1_chart.destroy();
+            ec1_chart = ChartEC('EC_1', dataset_ec_1, xLabels_1);
+            console.log("Updated dataset_ec_1 with sensor 1 ec levels:", dataset_ec_1);
+            
+            dataset_ec_2 = newEcLevels2;
+            ec2_chart.destroy();
+            ec2_chart = ChartEC('EC_2', dataset_ec_2, xLabels_2);
+            console.log("Updated dataset_ec_2 with sensor 2 ec levels:", dataset_ec_2);
+
+            data_humedad_1 = [humidity_25_1, humidity_50_1, humidity_75_1];
+            hum1_chart.destroy();
+            hum1_chart = ChartHumidity('Humedad_1', data_humedad_1, xLabels_1);
+            console.log("Updated data_humedad_1 with sensor 1 humidity levels:", data_humedad_1);
+
+            data_humedad_2 = [humidity_25_2, humidity_50_2, humidity_75_2];
+            hum2_chart.destroy();
+            hum2_chart = ChartHumidity('Humedad_2', data_humedad_2, xLabels_2);
+            console.log("Updated data_humedad_2 with sensor 2 humidity levels:", data_humedad_2);
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+    }
+    // Fetch the sensor data immediately and then every 60 seconds
+    fetchSensorData();
+    // humedadData.forEach(h => createChartHumedad(h.id, h.data));
+    setInterval(fetchSensorData, 10000);// 60000);
+  });
+
+
+function ChartHumidity(canvasId, data, xLabels) {
+    var datasets = data.map((dataset, index) => {
+        var colors = ['rgba(75,192,192,1)', 'rgba(255,99,132,1)', 'rgba(255,205,86,1)'];
+        return {
+            label: `Al ${25 * (index + 1)}% de profundidad`,
+            data: dataset,
+            borderColor: colors[index % colors.length],
+            borderWidth: 2,
+            fill: false // Ensure the area under the line isn't filled
+        };
+    });
+
+    var ctx = document.getElementById(canvasId);
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: xLabels,
+            datasets: datasets
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: window.innerWidth > 768
+                },
+                title: {
+                    display: true,
+                    text: 'Humedad %RH',
+                    font: {
+                        size: 20,
+                    },
+                    color: '#727272',
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(0,0,0,0.7)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    footerColor: '#fff',
+                    borderColor: '#fff',
+                    borderWidth: 1,
+                },
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        display: false,
+                    },
+                    grid: {
+                        borderDash: [5, 5]
+                    }
+                },
+                y: {
+                    grid: {
+                        borderDash: [5, 5]
+                    }
+                }
+            },
+        }
+    });
+    return chart;
+}
+
+hum1_chart = ChartHumidity('Humedad_1', data_humedad_1, xLabels_1);
+hum2_chart = ChartHumidity('Humedad_2', data_humedad_2, xLabels_2);
+
+
+function ChartEC(canvasId, dataset, xLabels) {
+    const ctx = document.getElementById(canvasId);
+    const data = {
+        label: `EC del suelo`,
+        data: dataset,
+        borderColor: 'rgba(255,205,86,1)',
+        borderWidth: 2,
+        fill: true, 
+        backgroundColor: 'rgba(255,205,86,0.2)'
+    };
+
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: xLabels,
+            datasets: [data]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Conductividad Eléctrica mS/cm',
+                    font: {
+                        size: 20,
+                    },
+                    color: '#727272',
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(0,0,0,0.7)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    footerColor: '#fff',
+                    borderColor: '#fff',
+                    borderWidth: 1,
+                },
+                legend: {
+                    display: false,
+                },
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        display: false,
+                    },
+                    grid: {
+                        borderDash: [5, 5]
+                    }
+                },
+                y: {
+                    grid: {
+                        borderDash: [5, 5]
+                    }
+                }
+            },
+        }
+    });
+
+    return chart;
+}
+
+ec1_chart = ChartEC('EC_1', dataset_ec_1, xLabels_1);
+ec2_chart = ChartEC('EC_2', dataset_ec_2, xLabels_2);
+
+function ChartBat(canvasId, dataset, xLabels) {
+    const ctx = document.getElementById(canvasId);
+    const data = {
+        label: `Batería del sistema`,
+        data: dataset,
+        borderColor: 'rgba(0, 168, 64)',
+        borderWidth: 1,
+        backgroundColor: 'rgba(0, 168, 64, 0.5)',
+    };
+
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: xLabels,
+            datasets: [data]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Batería del sistema %',
+                    font: {
+                        size: 20,
+                    },
+                    color: '#727272',
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(0,0,0,0.7)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    footerColor: '#fff',
+                    borderColor: '#fff',
+                    borderWidth: 1,
+                },
+                legend: {
+                    display: false,
+                },
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        display: false,
+                    },
+                    grid: {
+                        borderDash: [5, 5]
+                    }
+                },
+                y: {
+                    grid: {
+                        borderDash: [5, 5]
+                    }
+                }
+            },
+        }
+    });
+    return chart;
+}
+
+bat1_chart = ChartBat('BAT_1', dataset_bat_1, xLabels_1);
+bat2_chart = ChartBat('BAT_2', dataset_bat_2, xLabels_2);
+</script>
+
+</html>
+
